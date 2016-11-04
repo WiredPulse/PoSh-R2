@@ -7,22 +7,22 @@ PoSH-R2 is a set of Windows Management Instrumentation interface (WMI) scripts t
 PoSH-R2 will retrieve the following data from an individual machine or a group of systems:
 <br>
 <br>
-&#160;&#160;&#160;&#160;- Autorun entries<br>
-&#160;&#160;&#160;&#160;- Disk info<br>
-&#160;&#160;&#160;&#160;- Environment variables
-&#160;&#160;&#160;&#160;- Event logs (50 lastest)
-&#160;&#160;&#160;&#160;- Installed Software
-&#160;&#160;&#160;&#160;- Logon sessions
-&#160;&#160;&#160;&#160;- List of drivers
-&#160;&#160;&#160;&#160;- List of mapped network drives
-&#160;&#160;&#160;&#160;- List of running processes
-&#160;&#160;&#160;&#160;- Logged in user
-&#160;&#160;&#160;&#160;- Local groups
-&#160;&#160;&#160;&#160;- Local user accounts
-&#160;&#160;&#160;&#160;- Network configuration
-&#160;&#160;&#160;&#160;- Network connections
-&#160;&#160;&#160;&#160;- Patches
-&#160;&#160;&#160;&#160;- Scheduled tasks with AT command
-&#160;&#160;&#160;&#160;- Shares
-&#160;&#160;&#160;&#160;- Services
-&#160;&#160;&#160;&#160;- System Information
+&#160;&#160;&#160;&#160;- Autorun entries <br>
+&#160;&#160;&#160;&#160;- Disk info <br>
+&#160;&#160;&#160;&#160;- Environment variables <br>
+&#160;&#160;&#160;&#160;- Event logs (50 lastest) <br>
+&#160;&#160;&#160;&#160;- Installed Software <br>
+&#160;&#160;&#160;&#160;- Logon sessions <br>
+&#160;&#160;&#160;&#160;- List of drivers <br>
+&#160;&#160;&#160;&#160;- List of mapped network drives <br>
+&#160;&#160;&#160;&#160;- List of running processes <br>
+&#160;&#160;&#160;&#160;- Logged in user <br>
+&#160;&#160;&#160;&#160;- Local groups <br>
+&#160;&#160;&#160;&#160;- Local user accounts <br>
+&#160;&#160;&#160;&#160;- Network configuration <br>
+&#160;&#160;&#160;&#160;- Network connections <br>
+&#160;&#160;&#160;&#160;- Patches <br>
+&#160;&#160;&#160;&#160;- Scheduled tasks with AT command <br>
+&#160;&#160;&#160;&#160;- Shares <br>
+&#160;&#160;&#160;&#160;- Services <br>
+&#160;&#160;&#160;&#160;- System Information <br>
