@@ -5,8 +5,8 @@ PoSH-R2 is a set of Windows Management Instrumentation interface (WMI) scripts t
 <br>
 PoSH-R2 will retrieve the following data from an individual machine or a group of systems:
 <br>
-&#160;&#160;&#160;&#160;- Autorun entries
-&#160;&#160;&#160;&#160;- Disk info
+&#160;&#160;&#160;&#160;- Autorun entries<br>
+&#160;&#160;&#160;&#160;- Disk info<br>
             - Environment variables
             - Event logs (50 lastest)
             - Installed Software
