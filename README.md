@@ -26,3 +26,8 @@ In a single execution, PoSH-R2 will retrieve the following data from an individu
 &#160;&#160;&#160;&#160;- Shares <br>
 &#160;&#160;&#160;&#160;- Services <br>
 &#160;&#160;&#160;&#160;- System Information <br>
+
+
+# Usage <br>
+- Call upon the script from the shell and follow the prompts. <br>
+- Data will be saved to the same location the script was executed from. <br>
