@@ -34,5 +34,5 @@ In a single execution, PoSH-R2 will retrieve the following data from an individu
 
 # Pictures <br>
 ![Alt text](https://github.com/WiredPulse/PoSh-R2/blob/master/Pictures/1-Script_Execution.png?raw=true "Optional Title")<br>
-![Alt text](https://github.com/WiredPulse/PoSh-R2/blob/master/Pictures/2-results.png?raw=true "Optional Title")<br>
-![Alt text](https://github.com/WiredPulse/PoSh-R2/blob/master/Pictures/3-results2.png?raw=true "Optional Title")
+![Alt text](https://github.com/WiredPulse/PoSh-R2/blob/master/Pictures/2-Results.png?raw=true "Optional Title")<br>
+![Alt text](https://github.com/WiredPulse/PoSh-R2/blob/master/Pictures/3-Results2.png?raw=true "Optional Title")
