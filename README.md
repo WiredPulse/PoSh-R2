@@ -32,4 +32,5 @@ In a single execution, PoSH-R2 will retrieve the following data from an individu
 1. Call upon the script from the shell and follow the prompts. <br>
 2. Data will be saved to the same location the script was executed from. <br>
 
-![Alt text](https://github.com/WiredPulse/Hunters_Hub/blob/master/Screen_Shot.png?raw=true "Optional Title")
+![Alt text](https://github.com/WiredPulse/PoSh-R2/blob/master/Pictures/1-Script_Execution.png?raw=true "Optional Title")
+https://github.com/WiredPulse/PoSh-R2/blob/master/Pictures/1-Script_Execution.png
