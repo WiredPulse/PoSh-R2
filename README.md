@@ -37,7 +37,7 @@ In a single execution, PoSH-R2 will retrieve the following data from an individu
 Running the script <br>
 ![Alt text](https://github.com/WiredPulse/PoSh-R2/blob/master/Pictures/1-Script_Execution.png?raw=true "Optional Title")<br>
 <br>
-A listing of the results written a csv files
+A listing of the results written to csv files
 ![Alt text](https://github.com/WiredPulse/PoSh-R2/blob/master/Pictures/2-Results.png?raw=true "Optional Title")<br>
 <br>
 Reading the data back into PowerShell using out-gridview
