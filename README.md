@@ -30,7 +30,7 @@ In a single execution, PoSH-R2 will retrieve the following data from an individu
 
 # Usage <br>
 1. Call upon the script from the shell and follow the prompts. <br>
-2. Data will be saved to the same location the script was executed from. <br>
+2. Data will be saved to a new directory called "PoSH_R2--Results" within the same directory from which thise script was executed from. <br>
 
 # Pictures <br>
 <br>
