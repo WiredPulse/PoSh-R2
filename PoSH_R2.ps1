@@ -583,7 +583,7 @@ remove-item .\$computer.txt
 # Combining network connection files
 # ==============================================================================
 cd ..
-dir .\connects\* -include *.txt -rec | gc | export-csv .\Connections.csv
+dir .\connects\* -include *.txt -rec | gc | out-file .\Connections.csv
 
 # ==============================================================================
 # Cleaning up
