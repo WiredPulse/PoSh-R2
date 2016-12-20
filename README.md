@@ -44,7 +44,7 @@ A listing of the results written to csv files
 ![Alt text](https://github.com/WiredPulse/PoSh-R2/blob/master/Screenshots/2-Results.png?raw=true "Optional Title")<br>
 <br>
 Reading the data back into PowerShell using out-gridview (import-csv .\<some_file.csv> | out-gridview)
-![Alt text](https://github.com/WiredPulse/PoSh-R2/blob/master/Screenshots/3-Results2.png?raw=true "Optional Title")
+![Alt text](https://github.com/WiredPulse/PoSh-R2/blob/master/Screenshots/3-Results2.png?raw=true "Optional Title")<br>
 <br>
 Filtering only on splunk.exe. From the screenshot, we see it is running on six systems
 ![Alt text](https://github.com/WiredPulse/PoSh-R2/blob/master/Screenshots/4-Filter.png?raw=true "Optional Title")
