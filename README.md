@@ -32,13 +32,13 @@ In a single execution, PoSH-R2 will retrieve the following data from an individu
 1. Call upon the script from the shell and follow the prompts. <br>
 2. Data will be saved to a new directory called "PoSH_R2--Results" within the same directory from which thise script was executed from. <br>
 
-# Pictures <br>
+# Screenshots <br>
 <br>
 Running the script <br>
-![Alt text](https://github.com/WiredPulse/PoSh-R2/blob/master/Pictures/1-Script_Execution.png?raw=true "Optional Title")<br>
+![Alt text](https://github.com/WiredPulse/PoSh-R2/blob/master/screenshots/1-Script_Execution.png?raw=true "Optional Title")<br>
 <br>
 A listing of the results written to csv files
-![Alt text](https://github.com/WiredPulse/PoSh-R2/blob/master/Pictures/2-Results.png?raw=true "Optional Title")<br>
+![Alt text](https://github.com/WiredPulse/PoSh-R2/blob/master/screenshots/2-Results.png?raw=true "Optional Title")<br>
 <br>
 Reading the data back into PowerShell using out-gridview
-![Alt text](https://github.com/WiredPulse/PoSh-R2/blob/master/Pictures/3-Results2.png?raw=true "Optional Title")
+![Alt text](https://github.com/WiredPulse/PoSh-R2/blob/master/screenshots/3-Results2.png?raw=true "Optional Title")
