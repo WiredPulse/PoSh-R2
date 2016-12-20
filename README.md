@@ -29,8 +29,11 @@ In a single execution, PoSH-R2 will retrieve the following data from an individu
 
 
 # Usage <br>
-1. Call upon the script from the shell and follow the prompts. <br>
-2. Data will be saved to a new directory called "PoSH_R2--Results" within the same directory from which thise script was executed from. <br>
+1. Call upon the script from a PowerShell window with applicable rights for WMI and follow the prompts. <br>
+2. Data will be saved to a new directory called "PoSH_R2--Results" within the same directory from which this script was executed from. <br>
+
+# Additional Notes <br>
+- This script will work with PowerShell version 2 and above
 
 # Screenshots <br>
 <br>
