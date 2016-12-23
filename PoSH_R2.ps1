@@ -75,7 +75,7 @@ Function ListComputers
                 if ($x -eq ($DNSArray.Length - 1)){$Separator = ""}else{$Separator =","} 
                 [string]$DN += "DC=" + $DNSArray[$x] + $Separator  } }
         $Script:Domain = $DN
-        echo "Pulled computers from: "$Script:Domain | Out-File $Script:Log_File -Append
+        echo "Pulled computers from: "$Script:Domain
         $objSearcher = New-Object System.DirectoryServices.DirectorySearcher("LDAP://$Script:Domain")
         $objSearcher.Filter = $strCategory
         $objSearcher.PageSize = 100000
@@ -97,7 +97,7 @@ Function ListComputers
         $Script:Domain = Read-Host "Enter your Domain here: OU=West,DC=Company,DC=com"
         If ($Script:Domain -eq $Null) {Write-Host "You did not provide a valid response."; . ListComputers}
         
-        echo "Pulled computers from: "$Script:Domain | Out-File $Script:Log_File -Append
+        echo "Pulled computers from: "$Script:Domain
         $objOU = New-Object System.DirectoryServices.DirectoryEntry("LDAP://$Script:Domain")
         $objSearcher = New-Object System.DirectoryServices.DirectorySearcher
         $objSearcher.SearchRoot = $objOU
