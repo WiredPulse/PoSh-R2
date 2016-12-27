@@ -9,7 +9,7 @@
             - Autorun entries
             - Disk info
             - Environment variables
-            - Event logs (50 lastest)
+            - Event logs (50 latest)
             - Installed Software
             - Logon sessions
             - List of drivers
@@ -26,14 +26,23 @@
             - Services
             - System Information
 
+    .USAGE
+        1) From a shell with applicable rights, call upon the script
+        2) Follow the prompts in order to input the computers you want to search on
+        3) Once complete, it is recommended to use out-gridview to read the files
 
 
     .NOTES  
         File Name      : PoSH-R2.ps1
-        Version        : v.0.1  
+        Version        : v.0.2
         Author         : @WiredPulse
         Prerequisite   : PowerShell
         Created        : 10 Oct 16
+
+
+   .CHANGELOG
+        v0.2:
+            27 December 2016: Fixed "Network Connections" syntax. Also added changelog and usage section to notes.
 
 
     ####################################################################################
@@ -75,7 +84,11 @@ Function ListComputers
                 if ($x -eq ($DNSArray.Length - 1)){$Separator = ""}else{$Separator =","} 
                 [string]$DN += "DC=" + $DNSArray[$x] + $Separator  } }
         $Script:Domain = $DN
+<<<<<<< HEAD
+        echo "Pulled computers from: "$Script:Domain 
+=======
         echo "Pulled computers from: "$Script:Domain
+>>>>>>> origin/master
         $objSearcher = New-Object System.DirectoryServices.DirectorySearcher("LDAP://$Script:Domain")
         $objSearcher.Filter = $strCategory
         $objSearcher.PageSize = 100000
@@ -97,7 +110,11 @@ Function ListComputers
         $Script:Domain = Read-Host "Enter your Domain here: OU=West,DC=Company,DC=com"
         If ($Script:Domain -eq $Null) {Write-Host "You did not provide a valid response."; . ListComputers}
         
+<<<<<<< HEAD
+        echo "Pulled computers from: "$Script:Domain 
+=======
         echo "Pulled computers from: "$Script:Domain
+>>>>>>> origin/master
         $objOU = New-Object System.DirectoryServices.DirectoryEntry("LDAP://$Script:Domain")
         $objSearcher = New-Object System.DirectoryServices.DirectorySearcher
         $objSearcher.SearchRoot = $objOU
