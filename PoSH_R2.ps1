@@ -1,11 +1,10 @@
 ﻿<#
-    .SYNOPSIS  
-        PoSH-R2 is a set of Windows Management Instrumentation interface (WMI) scripts that investigators and forensic analysts can use to retrieve information from a 
-        compromised (or potentially compromised) Windows system. The scripts use WMI to pull this information from the operating system. Therefore, this script 
-        will need to be executed with a user that has the necessary privileges.
+.SYNOPSIS  
+    PoSH-R2 is a set of Windows Management Instrumentation interface (WMI) scripts that investigators and forensic analysts can use to retrieve information from a 
+    compromised (or potentially compromised) Windows system. The scripts use WMI to pull this information from the operating system. Therefore, this script 
+    will need to be executed with a user that has the necessary privileges.
 
-        PoSH-R2 will retrieve the following data from an individual machine or a group of systems:
-            
+    PoSH-R2 will retrieve the following data from an individual machine or a group of systems:       
             - Autorun entries
             - Disk info
             - Environment variables
@@ -26,29 +25,15 @@
             - Services
             - System Information
 
-    .USAGE
-        1) From a shell with applicable rights, call upon the script
-        2) Follow the prompts in order to input the computers you want to search on
-        3) Once complete, it is recommended to use out-gridview to read the files
+.EXAMPLE
+    .\posh_r2.ps1
 
-
-    .NOTES  
-        File Name      : PoSH-R2.ps1
-        Version        : v.0.2
-        Author         : @WiredPulse
-        Prerequisite   : PowerShell
-        Created        : 10 Oct 16
-
-
-   .CHANGELOG
-        v0.2:
-            27 December 2016: Fixed "Network Connections" syntax. Also added changelog and usage section to notes.
-
-
-    ####################################################################################
-
-
-
+.NOTES  
+    File Name      : PoSH-R2.ps1
+    Version        : v.0.2
+    Author         : @WiredPulse
+    Prerequisite   : PowerShell
+    Created        : 10 Oct 16
 #>
 
 
@@ -84,11 +69,7 @@ Function ListComputers
                 if ($x -eq ($DNSArray.Length - 1)){$Separator = ""}else{$Separator =","} 
                 [string]$DN += "DC=" + $DNSArray[$x] + $Separator  } }
         $Script:Domain = $DN
-<<<<<<< HEAD
         echo "Pulled computers from: "$Script:Domain 
-=======
-        echo "Pulled computers from: "$Script:Domain
->>>>>>> origin/master
         $objSearcher = New-Object System.DirectoryServices.DirectorySearcher("LDAP://$Script:Domain")
         $objSearcher.Filter = $strCategory
         $objSearcher.PageSize = 100000
@@ -109,12 +90,7 @@ Function ListComputers
         Write-Host "Auto pull uses the current domain you are on, if you need to select a different domain use manual."
         $Script:Domain = Read-Host "Enter your Domain here: OU=West,DC=Company,DC=com"
         If ($Script:Domain -eq $Null) {Write-Host "You did not provide a valid response."; . ListComputers}
-        
-<<<<<<< HEAD
         echo "Pulled computers from: "$Script:Domain 
-=======
-        echo "Pulled computers from: "$Script:Domain
->>>>>>> origin/master
         $objOU = New-Object System.DirectoryServices.DirectoryEntry("LDAP://$Script:Domain")
         $objSearcher = New-Object System.DirectoryServices.DirectorySearcher
         $objSearcher.SearchRoot = $objOU
@@ -488,8 +464,8 @@ Get-WmiObject -Class win32_networkloginprofile -ComputerName $computers | select
 # ==============================================================================
 Write-Host "Retrieving event log information..." -ForegroundColor yellow
 Get-WmiObject -Class win32_ntlogevent | where {$_.LogFile -eq 'System'} | select PSComputername, LogFile, EventCode, TimeGenerated, Message, InsertionStrings, Type | select -first 50 | Export-CSV .\Eventlogs-System.csv -NoTypeInformation
-Get-WmiObject -Class win32_ntlogevent | where {$_.LogFile -eq 'System'} | select PSComputername, LogFile, EventCode, TimeGenerated, Message, InsertionStrings, Type | select -first 50 | Export-CSV .\Eventlogs-Security.csv -NoTypeInformation
-Get-WmiObject -Class win32_ntlogevent | where {$_.LogFile -eq 'System'} | select PSComputername, LogFile, EventCode, TimeGenerated, Message, InsertionStrings, Type | select -first 50 | Export-CSV .\Eventlogs-Application.csv -NoTypeInformation
+Get-WmiObject -Class win32_ntlogevent | where {$_.LogFile -eq 'Security'} | select PSComputername, LogFile, EventCode, TimeGenerated, Message, InsertionStrings, Type | select -first 50 | Export-CSV .\Eventlogs-Security.csv -NoTypeInformation
+Get-WmiObject -Class win32_ntlogevent | where {$_.LogFile -eq 'Application'} | select PSComputername, LogFile, EventCode, TimeGenerated, Message, InsertionStrings, Type | select -first 50 | Export-CSV .\Eventlogs-Application.csv -NoTypeInformation
 
 # ==============================================================================
 # Driver information
