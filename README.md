@@ -37,9 +37,8 @@ In a single execution, PoSH-R2 will retrieve the following data from an individu
 
 # Screenshots <br>
 <br>
-Running the script <br>
+Running the script <br><br>
 ![Alt text](https://github.com/WiredPulse/PoSh-R2/blob/master/Screenshots/1-Script_Execution.png?raw=true "Optional Title")
-![Alt text](https://github.com/WiredPulse/BlueSpectrum/blob/master/Screenshots/Indicators.PNG?raw=true "Optional Title")
 <br>
 <br>
 A listing of the results written to csv files<br>
