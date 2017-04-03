@@ -2,7 +2,7 @@
 # Screenshots <br>
 <br>
 Running the script <br><br>
-![screenshot](/Screenshots/1-Script_Execution.png)<br><br>
+![Screenshot](/Screenshots/1-Script_Execution.png)<br><br>
 A listing of the results written to csv files
 <br>
 ![Alt text](https://github.com/WiredPulse/SkittleGrinder/blob/master/Grinder.png?raw=true "Optional Title")
