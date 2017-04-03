@@ -1,11 +1,8 @@
 
 # Screenshots <br>
 <br>
-Running the script <br>
-![Alt text](https://github.com/WiredPulse/PoSh-R2/blob/master/Screenshots/1-Script_Execution.png?raw=true "Optional Title")<br><br>
-<br><br>
 
-A listing of the results written to csv files
+Running the script
 <br>
 ![Alt text](https://github.com/WiredPulse/PoSh-R2/blob/master/Screenshots/1-Script_Execution.png?raw=true "Optional Title")<br><br>
 <br>
