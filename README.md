@@ -7,6 +7,7 @@ Running the script <br>
 
 A listing of the results written to csv files
 <br>
+![Alt text](https://github.com/WiredPulse/PoSh-R2/blob/master/Screenshots/1-Script_Execution.png?raw=true "Optional Title")<br><br>
 <br>
 <br>
 Reading the data back into PowerShell using out-gridview (import-csv .\<some_file.csv> | out-gridview)<br>
