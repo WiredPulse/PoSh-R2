@@ -9,7 +9,7 @@
             - Disk info
             - Environment variables
             - Event logs (50 latest)
-            - Installed Software
+            - Installed Software (Warning: https://gregramsey.net/2012/02/20/win32_product-is-evil/)
             - Logon sessions
             - List of drivers
             - List of mapped network drives
@@ -552,7 +552,7 @@ Write-Host "Retrieving installed patch information..." -ForegroundColor yellow
 Get-WmiObject -Class win32_quickfixengineering -ComputerName $computers | select PSComputername, HotFixID, Description, InstalledBy, InstalledOn | Export-CSV .\Patches.csv -NoTypeInformation
 
 # ==============================================================================
-# Installed Software
+# Installed Software... Warning: https://gregramsey.net/2012/02/20/win32_product-is-evil/
 # ==============================================================================
 Write-Host "Retrieving installed software information..." -ForegroundColor yellow
 Get-WmiObject -Class win32_product -ComputerName $computers | select PSComputername, Name, PackageCache, Vendor, Version, IdentifyingNumber | Export-CSV .\Software.csv -NoTypeInformation
