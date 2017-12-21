@@ -463,9 +463,9 @@ Get-WmiObject -Class win32_networkloginprofile -ComputerName $computers | select
 # is not ran from the ISE console)
 # ==============================================================================
 Write-Host "Retrieving event log information..." -ForegroundColor yellow
-Get-WmiObject -Class win32_ntlogevent | where {$_.LogFile -eq 'System'} | select PSComputername, LogFile, EventCode, TimeGenerated, Message, InsertionStrings, Type | select -first 50 | Export-CSV .\Eventlogs-System.csv -NoTypeInformation
-Get-WmiObject -Class win32_ntlogevent | where {$_.LogFile -eq 'Security'} | select PSComputername, LogFile, EventCode, TimeGenerated, Message, InsertionStrings, Type | select -first 50 | Export-CSV .\Eventlogs-Security.csv -NoTypeInformation
-Get-WmiObject -Class win32_ntlogevent | where {$_.LogFile -eq 'Application'} | select PSComputername, LogFile, EventCode, TimeGenerated, Message, InsertionStrings, Type | select -first 50 | Export-CSV .\Eventlogs-Application.csv -NoTypeInformation
+Get-WmiObject -Class win32_ntlogevent -ComputerName $computers | where {$_.LogFile -eq 'System'} | select PSComputername, LogFile, EventCode, TimeGenerated, Message, InsertionStrings, Type | select -first 50 | Export-CSV .\Eventlogs-System.csv -NoTypeInformation
+Get-WmiObject -Class win32_ntlogevent -ComputerName $computers | where {$_.LogFile -eq 'Security'} | select PSComputername, LogFile, EventCode, TimeGenerated, Message, InsertionStrings, Type | select -first 50 | Export-CSV .\Eventlogs-Security.csv -NoTypeInformation
+Get-WmiObject -Class win32_ntlogevent -ComputerName $computers | where {$_.LogFile -eq 'Application'} | select PSComputername, LogFile, EventCode, TimeGenerated, Message, InsertionStrings, Type | select -first 50 | Export-CSV .\Eventlogs-Application.csv -NoTypeInformation
 
 # ==============================================================================
 # Driver information
