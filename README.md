@@ -41,6 +41,11 @@ Running the script<br>
 A listing of the results written to csv files<br>
 ![Alt text](https://github.com/WiredPulse/PoSh-R2/blob/master/Screenshots/2.1-Results.png?raw=true "Optional Title")<br>
 <br>
+<br>
+A listing of the databases<br>
+![Alt text](https://github.com/WiredPulse/PoSh-R2/blob/master/Screenshots/2-Results.png?raw=true "Optional Title")<br>
+<br>
+<br>
 Reading the data back into PowerShell using out-gridview (import-csv .\<some_file.csv> | out-gridview)<br>
 ![Alt text](https://github.com/WiredPulse/PoSh-R2/blob/master/Screenshots/3-Results2.png?raw=true "Optional Title")<br>
 <br>
