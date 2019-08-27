@@ -1,10 +1,10 @@
 ﻿<#
-.SYNOPSIS
-    PoSH-R2 is a set of Windows Management Instrumentation interface (WMI) scripts that investigators and forensic analysts can use to retrieve information from a
-    compromised (or potentially compromised) Windows system. The scripts use WMI to pull this information from the operating system. Therefore, this script
+.SYNOPSIS  
+    PoSH-R2 is a set of Windows Management Instrumentation interface (WMI) scripts that investigators and forensic analysts can use to retrieve information from a 
+    compromised (or potentially compromised) Windows system. The scripts use WMI to pull this information from the operating system. Therefore, this script 
     will need to be executed with a user that has the necessary privileges.
 
-    PoSH-R2 will retrieve the following data from an individual machine or a group of systems:
+    PoSH-R2 will retrieve the following data from an individual machine or a group of systems:       
             - Autorun entries
             - Disk info
             - Environment variables
@@ -38,9 +38,6 @@
 
 Import-Module "$PSScriptRoot\PSSQLite\PSSQLite.psd1"
 
-# ==============================================================================
-# Function Name 'ListComputers' - Takes entered domain and lists all computers
-# ==============================================================================
 Function ListComputers
 {
     $DN = ""
@@ -50,7 +47,9 @@ Function ListComputers
     $objSearcher = ""
     $colProplist = ""
     $objComputer = ""
+    $objResults = ""
     $colResults = ""
+    $Computer = ""
     $comp = ""
     New-Item -type file -force "$Script:Folder_Path\Computer_List_$Script:curDate.txt" | Out-Null
     $Script:Compute = "$Script:Folder_Path\Computer_List_$Script:curDate.txt"
@@ -68,7 +67,7 @@ Function ListComputers
                 if ($x -eq ($DNSArray.Length - 1)){$Separator = ""}else{$Separator =","} 
                 [string]$DN += "DC=" + $DNSArray[$x] + $Separator  } }
         $Script:Domain = $DN
-        Write-Output "Pulled computers from: "$Script:Domain 
+        echo "Pulled computers from: "$Script:Domain 
         $objSearcher = New-Object System.DirectoryServices.DirectorySearcher("LDAP://$Script:Domain")
         $objSearcher.Filter = $strCategory
         $objSearcher.PageSize = 100000
@@ -80,7 +79,7 @@ Function ListComputers
         foreach ($objResult in $colResults) {
             $objComputer = $objResult.Properties
             $comp = $objComputer.name
-            Write-Output $comp | Out-File $Script:Compute -Append }
+            echo $comp | Out-File $Script:Compute -Append }
         $Script:Computers = (Get-Content $Script:Compute) | Sort-Object
     }
 	elseif($Response -eq "2")
@@ -89,7 +88,7 @@ Function ListComputers
         Write-Host "Auto pull uses the current domain you are on, if you need to select a different domain use manual."
         $Script:Domain = Read-Host "Enter your Domain here: OU=West,DC=Company,DC=com"
         If ($Script:Domain -eq $Null) {Write-Host "You did not provide a valid response."; . ListComputers}
-        Write-Output "Pulled computers from: "$Script:Domain 
+        echo "Pulled computers from: "$Script:Domain 
         $objOU = New-Object System.DirectoryServices.DirectoryEntry("LDAP://$Script:Domain")
         $objSearcher = New-Object System.DirectoryServices.DirectorySearcher
         $objSearcher.SearchRoot = $objOU
@@ -102,7 +101,7 @@ Function ListComputers
         foreach ($objResult in $colResults) {
             $objComputer = $objResult.Properties
             $comp = $objComputer.name
-            Write-Output $comp | Out-File $Script:Compute -Append }
+            echo $comp | Out-File $Script:Compute -Append }
         $Script:Computers = (Get-Content $Script:Compute) | Sort-Object
     }
     else {
@@ -110,11 +109,6 @@ Function ListComputers
         . ListComputers }
 }
 
-# ==============================================================================
-# Function Name 'ListTextFile' - Enumerates Computer Names in a text file
-# Create a text file and enter the names of each computer. One computer
-# name per line. Supply the path to the text file when prompted.
-# ==============================================================================
 Function ListTextFile 
 {
 	$file_Dialog = ""
@@ -153,12 +147,6 @@ Function ListTextFile
 }
 
 Function Get-Subnet-Range {
-    #.Synopsis
-    # Lists all IPs in a subnet.
-    #.Example
-    # Get-Subnet-Range -IP 192.168.1.0 -Netmask /24
-    #.Example
-    # Get-Subnet-Range -IP 192.168.1.128 -Netmask 255.255.255.128        
     Param(
         [string]
         $IP,
@@ -169,10 +157,6 @@ Function Get-Subnet-Range {
         $IPs = New-Object System.Collections.ArrayList
 
         Function Get-NetworkAddress {
-            #.Synopsis
-            # Get the network address of a given lan segment
-            #.Example
-            # Get-NetworkAddress -IP 192.168.1.36 -mask 255.255.255.0
             Param (
                 [string]
                 $IP,
@@ -189,7 +173,7 @@ Function Get-Subnet-Range {
             Process {
                 $BinaryIP = ConvertTo-BinaryIP $IP
                 $BinaryMask = ConvertTo-BinaryIP $Mask
-                0..34 | ForEach-Object{
+                0..34 | %{
                     $IPBit = $BinaryIP.Substring($_,1)
                     $MaskBit = $BinaryMask.Substring($_,1)
                     IF ($IPBit -eq '1' -and $MaskBit -eq '1') {
@@ -209,10 +193,6 @@ Function Get-Subnet-Range {
         }
        
         Function ConvertTo-BinaryIP {
-            #.Synopsis
-            # Convert an IP address to binary
-            #.Example
-            # ConvertTo-BinaryIP -IP 192.168.1.1
             Param (
                 [string]
                 $IP
@@ -221,7 +201,7 @@ Function Get-Subnet-Range {
                 $out = @()
                 Foreach ($octet in $IP.split('.')) {
                     $strout = $null
-                    0..7|ForEach-Object {
+                    0..7|% {
                         IF (($octet - [math]::pow(2,(7-$_)))-ge 0) {
                             $octet = $octet - [math]::pow(2,(7-$_))
                             [string]$strout = $strout + "1"
@@ -237,10 +217,6 @@ Function Get-Subnet-Range {
  
  
         Function ConvertFrom-BinaryIP {
-            #.Synopsis
-            # Convert from Binary to an IP address
-            #.Example
-            # Convertfrom-BinaryIP -IP 11000000.10101000.00000001.00000001
             Param (
                 [string]
                 $IP
@@ -249,7 +225,7 @@ Function Get-Subnet-Range {
                 $out = @()
                 Foreach ($octet in $IP.split('.')) {
                     $strout = 0
-                    0..7|ForEach-Object {
+                    0..7|% {
                         $bit = $octet.Substring(($_),1)
                         IF ($bit -eq 1) {
                             $strout = $strout + [math]::pow(2,(7-$_))
@@ -262,10 +238,6 @@ Function Get-Subnet-Range {
         }
 
         Function ConvertTo-MaskLength {
-            #.Synopsis
-            # Convert from a netmask to the masklength
-            #.Example
-            # ConvertTo-MaskLength -Mask 255.255.255.0
             Param (
                 [string]
                 $mask
@@ -274,7 +246,7 @@ Function Get-Subnet-Range {
                 $out = 0
                 Foreach ($octet in $Mask.split('.')) {
                     $strout = 0
-                    0..7|ForEach-Object {
+                    0..7|% {
                         IF (($octet - [math]::pow(2,(7-$_)))-ge 0) {
                             $octet = $octet - [math]::pow(2,(7-$_))
                             $out++
@@ -286,12 +258,6 @@ Function Get-Subnet-Range {
         }
  
         Function ConvertFrom-MaskLength {
-            #.Synopsis
-            # Convert from masklength to a netmask
-            #.Example
-            # ConvertFrom-MaskLength -Mask /24
-            #.Example
-            # ConvertFrom-MaskLength -Mask 24
             Param (
                 [int]
                 $mask
@@ -300,14 +266,14 @@ Function Get-Subnet-Range {
                 $out = @()
                 [int]$wholeOctet = ($mask - ($mask % 8))/8
                 if ($wholeOctet -gt 0) {
-                    1..$($wholeOctet) |ForEach-Object{
+                    1..$($wholeOctet) |%{
                         $out += "255"
                     }
                 }
                 $subnet = ($mask - ($wholeOctet * 8))
                 if ($subnet -gt 0) {
                     $octet = 0
-                    0..($subnet - 1) | ForEach-Object{
+                    0..($subnet - 1) | %{
                          $octet = $octet + [math]::pow(2,(7-$_))
                     }
                     $out += $octet
@@ -320,12 +286,6 @@ Function Get-Subnet-Range {
         }
 
         Function Get-IPRange {
-            #.Synopsis
-            # Given an Ip and subnet, return every IP in that lan segment
-            #.Example
-            # Get-IPRange -IP 192.168.1.36 -Mask 255.255.255.0
-            #.Example
-            # Get-IPRange -IP 192.168.5.55 -Mask /23
             Param (
                 [string]
                 $IP,
@@ -347,8 +307,8 @@ Function Get-Subnet-Range {
                 $TotalIPs = ([math]::pow(2,(32-$masklength)) -2)
                 $blocks = ($TotalIPs - ($TotalIPs % 256))/256
                 if ($Blocks -gt 0) {
-                    1..$blocks | ForEach-Object{
-                        0..255 |ForEach-Object{
+                    1..$blocks | %{
+                        0..255 |%{
                             if ($FourthOctet -eq 255) {
                                 If ($ThirdOctet -eq 255) {
                                     If ($SecondOctet -eq 255) {
@@ -372,7 +332,7 @@ Function Get-Subnet-Range {
                 }
                 $sBlock = $TotalIPs - ($blocks * 256)
                 if ($sBlock -gt 0) {
-                    1..$SBlock | ForEach-Object{
+                    1..$SBlock | %{
                         if ($FourthOctet -eq 255) {
                             If ($ThirdOctet -eq 255) {
                                 If ($SecondOctet -eq 255) {
@@ -397,17 +357,14 @@ Function Get-Subnet-Range {
         }
     }
     Process {
-        #get every ip in scope
-        Get-IPRange $IP $netmask | foreach-object{
+        Get-IPRange $IP $netmask | %{
         [void]$IPs.Add($_)
         }
         $Script:IPList = $IPs
     }
 }
 
-# ==============================================================================
-# Function Name 'SingleEntry' - Enumerates Computer from user input
-# ==============================================================================
+
 Function SingleEntry 
 {
     $Comp = Read-Host "Enter Computer Name or IP (1.1.1.1) or IP Subnet (1.1.1.1/24)"
@@ -780,122 +737,63 @@ if(-not(test-path "$netstatDB")){
 Invoke-SqliteQuery -Query $Query -DataSource $netstatDB | Out-Null
 }
 
-# ==============================================================================
-# Autorun information
-# ==============================================================================
 Write-Host "Retrieving Autoruns information..." -ForegroundColor yellow
-Get-WMIObject -Namespace root\cimv2 -Class win32_startupcommand -ComputerName $computers | Select-Object PSComputername, Name, Location, Command, User | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Autoruns.csv -NoTypeInformation
+Get-WMIObject -Namespace root\cimv2 -Class win32_startupcommand -ComputerName $computers | select PSComputername, Name, Location, Command, User | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Autoruns.csv -NoTypeInformation
 
-# ==============================================================================
-# Logon information
-# ==============================================================================
 Write-Host "Retrieving logon information..." -ForegroundColor yellow
-Get-WMIObject -Namespace root\cimv2 -Class win32_networkloginprofile -ComputerName $computers | Select-Object PSComputername,Name, LastLogon,LastLogoff,NumberOfLogons,PasswordAge | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\NetLogon.csv -NoTypeInformation
+Get-WMIObject -Namespace root\cimv2 -Class win32_networkloginprofile -ComputerName $computers | select PSComputername,Name, LastLogon,LastLogoff,NumberOfLogons,PasswordAge | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\NetLogon.csv -NoTypeInformation
 
-# ==============================================================================
-# Event log information (Note: If logs are not returning data, ensure the script 
-# is not ran from the ISE console)
-# ==============================================================================
 Write-Host "Retrieving event log information..." -ForegroundColor yellow
-Get-WMIObject -Namespace root\cimv2 -Class win32_ntlogevent -ComputerName $computers -filter "logfile='security'" | Select-Object PSComputername, LogFile, EventCode, TimeGenerated, Message, Type | Select-Object -first 50 | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Eventlogs-Security.csv -NoTypeInformation
-Get-WMIObject -Namespace root\cimv2 -Class win32_ntlogevent -ComputerName $computers -filter "logfile='system'" | Select-Object PSComputername, LogFile, EventCode, TimeGenerated, Message, Type | Select-Object -first 50 | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Eventlogs-System.csv -NoTypeInformation
-Get-WMIObject -Namespace root\cimv2 -Class win32_ntlogevent -ComputerName $computers -filter "logfile='application'" | Select-Object PSComputername, LogFile, EventCode, TimeGenerated, Message, Type | Select-Object -first 50 | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Eventlogs-Application.csv -NoTypeInformation
+Get-WMIObject -Namespace root\cimv2 -Class win32_ntlogevent -ComputerName $computers -filter "logfile='security'" | select PSComputername, LogFile, EventCode, TimeGenerated, Message, Type | select -first 50 | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Eventlogs-Security.csv -NoTypeInformation
+Get-WMIObject -Namespace root\cimv2 -Class win32_ntlogevent -ComputerName $computers -filter "logfile='system'" | select PSComputername, LogFile, EventCode, TimeGenerated, Message, Type | select -first 50 | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Eventlogs-System.csv -NoTypeInformation
+Get-WMIObject -Namespace root\cimv2 -Class win32_ntlogevent -ComputerName $computers -filter "logfile='application'" | select PSComputername, LogFile, EventCode, TimeGenerated, Message, Type | select -first 50 | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Eventlogs-Application.csv -NoTypeInformation
 
-# ==============================================================================
-# Driver information
-# ==============================================================================
 Write-Host "Retrieving driver information..." -ForegroundColor yellow
-Get-WMIObject -Namespace root\cimv2 -Class win32_systemdriver -ComputerName $computers | Select-Object PSComputername, Name, InstallDate, DisplayName, PathName, State, StartMode | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Drivers.csv -NoTypeInformation
+Get-WMIObject -Namespace root\cimv2 -Class win32_systemdriver -ComputerName $computers | select PSComputername, Name, InstallDate, DisplayName, PathName, State, StartMode | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Drivers.csv -NoTypeInformation
 
-# ==============================================================================
-# Mapped drives information
-# ==============================================================================
 Write-Host "Retrieving mapped drives information..." -ForegroundColor yellow
-Get-WMIObject -Namespace root\cimv2 -Class win32_mappedlogicaldisk -ComputerName $computers | Select-Object PSComputername, Name, ProviderName | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Mapped_Drives.csv -NoTypeInformation
+Get-WMIObject -Namespace root\cimv2 -Class win32_mappedlogicaldisk -ComputerName $computers | select PSComputername, Name, ProviderName | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Mapped_Drives.csv -NoTypeInformation
 
-# ==============================================================================
-# Process information
-# ==============================================================================
 Write-Host "Retrieving running processes information..." -ForegroundColor yellow
-Get-WMIObject -Namespace root\cimv2 -Class win32_process -ComputerName $computers | Select-Object PSComputername, Name, path, Commandline, Description, ProcessID, ParentProcessID, Handle, HandleCount, ThreadCount, CreationDate | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Processes.csv -NoTypeInformation
+Get-WMIObject -Namespace root\cimv2 -Class win32_process -ComputerName $computers | select PSComputername, Name, path, Commandline, Description, ProcessID, ParentProcessID, Handle, HandleCount, ThreadCount, CreationDate | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Processes.csv -NoTypeInformation
 
-# ==============================================================================
-# Scheduled tasks
-# ==============================================================================
 Write-Host "Retrieving scheduled tasks created by at.exe or Win32_ScheduledJob..." -ForegroundColor yellow
-Get-WMIObject -Namespace root\cimv2 -Class win32_scheduledjob -ComputerName $computers | Select-Object PSComputername, Name, Owner, JodID, Command, RunRepeatedly, InteractWithDesktop | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Scheduled_Tasks.csv -NoTypeInformation
+Get-WMIObject -Namespace root\cimv2 -Class win32_scheduledjob -ComputerName $computers | select PSComputername, Name, Owner, JodID, Command, RunRepeatedly, InteractWithDesktop | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Scheduled_Tasks.csv -NoTypeInformation
 
-# ==============================================================================
-# Services
-# ==============================================================================
 Write-Host "Retrieving service information..." -ForegroundColor yellow
-Get-WMIObject -Namespace root\cimv2 -Class win32_service -ComputerName $computers | Select-Object PSComputername, ProcessID, Name, Description, PathName, Started, StartMode, StartName, State | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Services.csv -NoTypeInformation
+Get-WMIObject -Namespace root\cimv2 -Class win32_service -ComputerName $computers | select PSComputername, ProcessID, Name, Description, PathName, Started, StartMode, StartName, State | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Services.csv -NoTypeInformation
 
-# ==============================================================================
-# Environment variables
-# ==============================================================================
 Write-Host "Retrieving environment variables information..." -ForegroundColor yellow
-Get-WMIObject -Namespace root\cimv2 -Class win32_environment -ComputerName $computers | Select-Object PSComputername, UserName, Name, VariableValue | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Environment_Variables.csv -NoTypeInformation
+Get-WMIObject -Namespace root\cimv2 -Class win32_environment -ComputerName $computers | select PSComputername, UserName, Name, VariableValue | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Environment_Variables.csv -NoTypeInformation
 
-# ==============================================================================
-# User information
-# ==============================================================================
 Write-Host "Retrieving user information..." -ForegroundColor yellow
-Get-WMIObject -Namespace root\cimv2 -Class win32_useraccount -ComputerName $computers | Select-Object PSComputername, accounttype, name, fullname, domain, disabled, localaccount, lockout, passwordchangeable, passwordexpires, sid | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Users.csv -NoTypeInformation
+Get-WMIObject -Namespace root\cimv2 -Class win32_useraccount -ComputerName $computers | select PSComputername, accounttype, name, fullname, domain, disabled, localaccount, lockout, passwordchangeable, passwordexpires, sid | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Users.csv -NoTypeInformation
 
-# ==============================================================================
-# Group information
-# ==============================================================================
 Write-Host "Retrieving group information..." -ForegroundColor yellow
-Get-WMIObject -Namespace root\cimv2 -Class win32_group -ComputerName $computers |Select-Object PSComputername, Caption, Domain, Name, Sid | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Groups.csv -NoTypeInformation
+Get-WMIObject -Namespace root\cimv2 -Class win32_group -ComputerName $computers |select PSComputername, Caption, Domain, Name, Sid | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Groups.csv -NoTypeInformation
 
-# ==============================================================================
-# Logged in user
-# ==============================================================================
 Write-Host "Retrieving loggedon user information..." -ForegroundColor yellow
-Get-WMIObject -Namespace root\cimv2 -Class win32_computersystem -ComputerName $computers | Select-Object PSComputername, Username | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Logged_on_User.csv -NoTypeInformation
+Get-WMIObject -Namespace root\cimv2 -Class win32_computersystem -ComputerName $computers | select PSComputername, Username | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Logged_on_User.csv -NoTypeInformation
 
-# ==============================================================================
-# Network settings
-# ==============================================================================
 Write-Host "Retrieving network configurations..." -ForegroundColor yellow
-Get-WMIObject -Namespace root\cimv2 -Class win32_networkadapterconfiguration -ComputerName $computers | Select-Object PSComputername, IPAddress, IPSubnet, DefaultIPGateway, DHCPServer, DNSHostname, DNSserversearchorder, MACAddress, description| Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Network_Configs.csv -NoTypeInformation
+Get-WMIObject -Namespace root\cimv2 -Class win32_networkadapterconfiguration -ComputerName $computers | select PSComputername, IPAddress, IPSubnet, DefaultIPGateway, DHCPServer, DNSHostname, DNSserversearchorder, MACAddress, description| Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Network_Configs.csv -NoTypeInformation
 
-# ==============================================================================
-# Shares
-# ==============================================================================
 Write-Host "Retrieving shares information..." -ForegroundColor yellow
-Get-WMIObject -Namespace root\cimv2 -Class win32_share -ComputerName $computers |Select-Object PSComputername, Name, Path, Description | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Shares.csv -NoTypeInformation
+Get-WMIObject -Namespace root\cimv2 -Class win32_share -ComputerName $computers |select PSComputername, Name, Path, Description | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Shares.csv -NoTypeInformation
 
-# ==============================================================================
-# Disk information
-# ==============================================================================
 Write-Host "Retrieving disk information..." -ForegroundColor yellow
-Get-WMIObject -Namespace root\cimv2 -Class win32_logicaldisk -ComputerName $computers | Select-Object PSComputername, DeviceID, Description, ProviderName | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Disk.csv -NoTypeInformation
+Get-WMIObject -Namespace root\cimv2 -Class win32_logicaldisk -ComputerName $computers | select PSComputername, DeviceID, Description, ProviderName | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Disk.csv -NoTypeInformation
 
-# ==============================================================================
-# System information
-# ==============================================================================
 Write-Host "Retrieving system information..." -ForegroundColor yellow
-Get-WMIObject -Namespace root\cimv2 -Class win32_computersystem -ComputerName $computers | Select-Object PSComputername, Domain, Model, Manufacturer, EnableDaylightSavingsTime, PartOfDomain, Roles, SystemType, NumberOfProcessors, TotalPhysicalMemory, Username | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\System_Info.csv -NoTypeInformation
+Get-WMIObject -Namespace root\cimv2 -Class win32_computersystem -ComputerName $computers | select PSComputername, Domain, Model, Manufacturer, EnableDaylightSavingsTime, PartOfDomain, Roles, SystemType, NumberOfProcessors, TotalPhysicalMemory, Username | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\System_Info.csv -NoTypeInformation
 
-# ==============================================================================
-# Patch information
-# ==============================================================================
 Write-Host "Retrieving installed patch information..." -ForegroundColor yellow
-Get-WMIObject -Namespace root\cimv2 -Class win32_quickfixengineering -ComputerName $computers | Select-Object PSComputername, HotFixID, Description, InstalledBy, InstalledOn | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Patches.csv -NoTypeInformation
+Get-WMIObject -Namespace root\cimv2 -Class win32_quickfixengineering -ComputerName $computers | select PSComputername, HotFixID, Description, InstalledBy, InstalledOn | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Patches.csv -NoTypeInformation
 
-# ==============================================================================
-# Installed Software... Warning: https://gregramsey.net/2012/02/20/win32_product-is-evil/
-# ==============================================================================
+# Warning: https://gregramsey.net/2012/02/20/win32_product-is-evil/
 Write-Host "Retrieving installed software information..." -ForegroundColor yellow
-Get-WMIObject -Namespace root\cimv2 -Class win32_product -ComputerName $computers | Select-Object PSComputername, Name, PackageCache, Vendor, Version, IdentifyingNumber | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Software.csv -NoTypeInformation
+Get-WMIObject -Namespace root\cimv2 -Class win32_product -ComputerName $computers | select PSComputername, Name, PackageCache, Vendor, Version, IdentifyingNumber | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Software.csv -NoTypeInformation
 
-#set-location .\connects
-
-# ==============================================================================
-# Network connections
-# ==============================================================================
 Write-Host "Retrieving network connections..." -ForegroundColor yellow
 if($localhost -eq $null){
 foreach($computer in $computers){
@@ -993,11 +891,6 @@ $NetStatRecords | export-csv $PSScriptRoot\PoSh-R2_data\$dirDate\connections.csv
 Remove-Variable NetStatRecords
 }
 
-# ==============================================================================
-# Cleaning up
-# ==============================================================================
-#remove-item $PSScriptRoot\PoSh-R2_data\connects -recurse -force
-#remove-item \\$computer\c$\$computer.txt 
 Write-host "Done!"-ForegroundColor Cyan
 Write-output "..."
 Write-Host "Importing data to databases..." -ForegroundColor yello
