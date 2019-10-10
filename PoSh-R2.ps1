@@ -35,11 +35,11 @@
     Prerequisite   : PowerShell
     Created        : 10 Oct 16
 #>
+Clear-Host
 
 Import-Module "$PSScriptRoot\PSSQLite\PSSQLite.psd1"
 
-Function ListComputers
-{
+Function ListComputers{
     $DN = ""
     $Response = ""
     $DNSName = ""
@@ -109,8 +109,7 @@ Function ListComputers
         . ListComputers }
 }
 
-Function ListTextFile 
-{
+Function ListTextFile{
 	$file_Dialog = ""
     $file_Name = ""
     [System.Reflection.Assembly]::LoadWithPartialName("System.windows.forms") | Out-Null
@@ -364,9 +363,7 @@ Function Get-Subnet-Range {
     }
 }
 
-
-Function SingleEntry 
-{
+Function SingleEntry {
     $Comp = Read-Host "Enter Computer Name or IP (1.1.1.1) or IP Subnet (1.1.1.1/24)"
     If ($Comp -eq $Null) { . SingleEntry } 
     ElseIf ($Comp -match "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/\d{1,2}")
@@ -381,6 +378,8 @@ Function SingleEntry
     { $Script:Computers = $Comp}
 }
 
+$script:poshDB = "$PSScriptRoot" + "\PoSh-R2_data\db\PoSh-R2.SQLite"
+<#
 $script:autorunDB = "$PSScriptRoot" + "\PoSh-R2_data\db\autorun.SQLite"
 $script:logonDB = "$PSScriptRoot" + "\PoSh-R2_data\db\logon.SQLite"
 $script:secEvtDB = "$PSScriptRoot" + "\PoSh-R2_data\db\secevt.SQLite"
@@ -402,14 +401,14 @@ $script:sysinfoDB = "$PSScriptRoot" + "\PoSh-R2_data\db\sysinfo.SQLite"
 $script:patchDB = "$PSScriptRoot" + "\PoSh-R2_data\db\patch.SQLite"
 $script:softwareDB = "$PSScriptRoot" + "\PoSh-R2_data\db\software.SQLite"
 $script:netstatDB = "$PSScriptRoot" + "\PoSh-R2_data\db\netstat.SQLite"
+#>
 
-
-Write-Host "  ______                   _______  __    __          ______      ___    " -ForegroundColor Green
-Write-Host " |   _  \                 /      | |  |  |  |        |   _  \    |__ \   " -ForegroundColor Green
-Write-Host " |  |_)  |   ______      |   (---- |  |__|  |  ______|  |_)  |      ) |  " -ForegroundColor Green
-Write-Host " |   ___/   /  __  \      \   \    |   __   | |______|      /      / /   " -ForegroundColor Green
-Write-Host " |  |      |  |__|  | |----)   |   |  |  |  |        |  |\  \-----/ /_   " -ForegroundColor Green
-Write-Host " | _|       \______/  |_______/    |__|  |__|        | _| \_____|_____|  " -ForegroundColor Green
+Write-Host "  ______                   _______  __                  ______      ___    " -ForegroundColor Green
+Write-Host " |   _  \                 /      | |  |                |   _  \    |__ \   " -ForegroundColor Green
+Write-Host " |  |_)  |   ______      |   (---- |  |_____   ______  |  |_)  |      ) |  " -ForegroundColor Green
+Write-Host " |   ___/   /  __  \      \   \    |   __   | |______| |      /      / /   " -ForegroundColor Green
+Write-Host " |  |      |  |__|  | |----)   |   |  |  |  |          |  |\  \-----/ /_   " -ForegroundColor Green
+Write-Host " | _|       \______/  |_______/    |__|  |__|          | _| \_____|_____|  " -ForegroundColor Green
 Write-Host ""
 
 Write-Host "What systems do you get to interrogate?"	-ForegroundColor yellow
@@ -434,420 +433,380 @@ if(-not(test-path "$PSScriptRoot\PoSh-R2_Data\db")){
 $dirDate = get-date -Format yyyy-MM-dd-HHmm
 new-item -ItemType Directory -path "$PSScriptRoot\PoSh-R2_Data" -Name "$dirDate" | out-null
 
-if(-not(test-path "$autorunDB")){
-$Query = 'CREATE TABLE autorun (
-    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
-    date DATETIME,
-    computername TEXT,
-    name TEXT,
-    location TEXT,
-    command TEXT,
-    user TEXT)'
+if(-not(test-path "$poshDB")){
+    $Query = 'CREATE TABLE autorun (
+        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
+        date DATETIME,
+        computername TEXT,
+        name TEXT,
+        location TEXT,
+        command TEXT,
+        user TEXT)'
 
-Invoke-SqliteQuery -Query $Query -DataSource $autorunDB | Out-Null
-}
+    Invoke-SqliteQuery -Query $Query -DataSource $poshDB | Out-Null
 
-if(-not(test-path "$diskDB")){
-$Query = 'CREATE TABLE disk (
-    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
-    date DATETIME,
-    computername TEXT,
-    deviceid TEXT,
-    description TEXT,
-    providername TEXT)'
 
-Invoke-SqliteQuery -Query $Query -DataSource $diskDB | Out-Null
-}
+    $Query = 'CREATE TABLE disk (
+        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
+        date DATETIME,
+        computername TEXT,
+        deviceid TEXT,
+        description TEXT,
+        providername TEXT)'
 
-if(-not(test-path "$driverDB")){
-$Query = 'CREATE TABLE drivers (
-    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
-    date DATETIME,
-    computername TEXT,
-    name TEXT,
-    installdate TEXT,
-    displayname TEXT,
-    pathname TEXT,
-    state TEXT,
-    startmode TEXT)'
+    Invoke-SqliteQuery -Query $Query -DataSource $poshDB | Out-Null
 
-Invoke-SqliteQuery -Query $Query -DataSource $driverDB | Out-Null
-}
+    $Query = 'CREATE TABLE drivers (
+        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
+        date DATETIME,
+        computername TEXT,
+        name TEXT,
+        installdate TEXT,
+        displayname TEXT,
+        pathname TEXT,
+        state TEXT,
+        startmode TEXT)'
 
-if(-not(test-path "$envDB")){
-$Query = 'CREATE TABLE env (
-    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
-    date DATETIME,
-    computername TEXT,
-    username TEXT,
-    name TEXT,
-    variablevalue TEXT)'
+    Invoke-SqliteQuery -Query $Query -DataSource $poshDB | Out-Null
 
-Invoke-SqliteQuery -Query $Query -DataSource $envDB | Out-Null
-}
+    $Query = 'CREATE TABLE env (
+        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
+        date DATETIME,
+        computername TEXT,
+        username TEXT,
+        name TEXT,
+        variablevalue TEXT)'
 
-if(-not(test-path "$appEvtDB")){
-$Query = 'CREATE TABLE appevt (
-    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
-    date DATETIME,
-    computername TEXT,
-    logfile TEXT,
-    eventcode TEXT,
-    timegenerated TEXT,
-    message TEXT,
-    type TEXT)'
+    Invoke-SqliteQuery -Query $Query -DataSource $poshDB | Out-Null
 
-Invoke-SqliteQuery -Query $Query -DataSource $appEvtDB | Out-Null
-}
-if(-not(test-path "$secEvtDB")){
-$Query = 'CREATE TABLE secevt (
-    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
-    date DATETIME,
-    computername TEXT,
-    logfile TEXT,
-    eventcode TEXT,
-    timegenerated TEXT,
-    message TEXT,
-    type TEXT)'
+    $Query = 'CREATE TABLE appevt (
+        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
+        date DATETIME,
+        computername TEXT,
+        logfile TEXT,
+        eventcode TEXT,
+        timegenerated TEXT,
+        message TEXT,
+        type TEXT)'
 
-Invoke-SqliteQuery -Query $Query -DataSource $secEvtDB | Out-Null
-}
+    Invoke-SqliteQuery -Query $Query -DataSource $poshDB | Out-Null
 
-if(-not(test-path "$sysEvtDB")){
-$Query = 'CREATE TABLE sysevt (
-    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
-    date DATETIME,
-    computername TEXT,
-    logfile TEXT,
-    eventcode TEXT,
-    timegenerated TEXT,
-    message TEXT,
-    type TEXT)'
+    $Query = 'CREATE TABLE secevt (
+        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
+        date DATETIME,
+        computername TEXT,
+        logfile TEXT,
+        eventcode TEXT,
+        timegenerated TEXT,
+        message TEXT,
+        type TEXT)'
 
-Invoke-SqliteQuery -Query $Query -DataSource $sysEvtDB | Out-Null
-}
+    Invoke-SqliteQuery -Query $Query -DataSource $poshDB | Out-Null
 
-if(-not(test-path "$groupDB")){
-$Query = 'CREATE TABLE groups (
-    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
-    date DATETIME,
-    computername TEXT,
-    caption TEXT,
-    domain TEXT,
-    name TEXT,
-    sid TEXT)'
+    $Query = 'CREATE TABLE sysevt (
+        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
+        date DATETIME,
+        computername TEXT,
+        logfile TEXT,
+        eventcode TEXT,
+        timegenerated TEXT,
+        message TEXT,
+        type TEXT)'
 
-Invoke-SqliteQuery -Query $Query -DataSource $groupDB | Out-Null
-}
+    Invoke-SqliteQuery -Query $Query -DataSource $poshDB | Out-Null
 
-if(-not(test-path "$logonDB")){
-$Query = 'CREATE TABLE netlogon (
-    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
-    date DATETIME,
-    computername TEXT,
-    name TEXT,
-    lastlogon TEXT,
-    lastlogoff TEXT,
-    numberoflogons TEXT,
-    passwordage TEXT)'
+    $Query = 'CREATE TABLE groups (
+        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
+        date DATETIME,
+        computername TEXT,
+        caption TEXT,
+        domain TEXT,
+        name TEXT,
+        sid TEXT)'
 
-Invoke-SqliteQuery -Query $Query -DataSource $logonDB | Out-Null
-}
+    Invoke-SqliteQuery -Query $Query -DataSource $poshDB | Out-Null
 
-if(-not(test-path "$loggedinDB")){
-$Query = 'CREATE TABLE loggedinuser (
-    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
-    date DATETIME,
-    computername TEXT,
-    username TEXT)'
+    $Query = 'CREATE TABLE netlogon (
+        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
+        date DATETIME,
+        computername TEXT,
+        name TEXT,
+        lastlogon TEXT,
+        lastlogoff TEXT,
+        numberoflogons TEXT,
+        passwordage TEXT)'
 
-Invoke-SqliteQuery -Query $Query -DataSource $loggedinDB | Out-Null
-}
+    Invoke-SqliteQuery -Query $Query -DataSource $poshDB | Out-Null
 
-if(-not(test-path "$mappedDB")){
-$Query = 'CREATE TABLE mappeddrives (
-    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
-    date DATETIME,
-    computername TEXT,
-    providername TEXT)'
+    $Query = 'CREATE TABLE loggedinuser (
+        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
+        date DATETIME,
+        computername TEXT,
+        username TEXT)'
 
-Invoke-SqliteQuery -Query $Query -DataSource $mappedDB | Out-Null
-}
+    Invoke-SqliteQuery -Query $Query -DataSource $poshDB | Out-Null
 
-if(-not(test-path "$processDB")){
-$Query = 'CREATE TABLE process (
-    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
-    date DATETIME,
-    computername TEXT,
-    name TEXT,
-    path TEXT,
-    commandline TEXT,
-    description TEXT,
-    processid TEXT,
-    parentprocessid TEXT,
-    handle TEXT,
-    handlecount TEXT,
-    threadcount TEXT,
-    creationdate TEXT)'
+    $Query = 'CREATE TABLE mappeddrives (
+        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
+        date DATETIME,
+        computername TEXT,
+        providername TEXT)'
 
-Invoke-SqliteQuery -Query $Query -DataSource $processDB | Out-Null
-}
+    Invoke-SqliteQuery -Query $Query -DataSource $poshDB | Out-Null
 
-if(-not(test-path "$schedtasksDB")){
+    $Query = 'CREATE TABLE process (
+        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
+        date DATETIME,
+        computername TEXT,
+        name TEXT,
+        path TEXT,
+        commandline TEXT,
+        description TEXT,
+        processid TEXT,
+        parentprocessid TEXT,
+        handle TEXT,
+        handlecount TEXT,
+        threadcount TEXT,
+        creationdate TEXT)'
+
+    Invoke-SqliteQuery -Query $Query -DataSource $poshDB | Out-Null
+
     $Query = 'CREATE TABLE schedtask (
-    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
-    date DATETIME,
-    computername TEXT,
-    name TEXT,
-    owner TEXT,
-    jobid TEXT,
-    command TEXT,
-    runrepeatedly TEXT,
-    interactwithdesktop TEXT)'
+        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
+        date DATETIME,
+        computername TEXT,
+        name TEXT,
+        owner TEXT,
+        jobid TEXT,
+        command TEXT,
+        runrepeatedly TEXT,
+        interactwithdesktop TEXT)'
 
-Invoke-SqliteQuery -Query $Query -DataSource $schedtasksDB | Out-Null
-}
+    Invoke-SqliteQuery -Query $Query -DataSource $poshDB | Out-Null
 
-if(-not(test-path "$servicesDB")){
     $Query = 'CREATE TABLE services (
-    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
-    date DATETIME,
-    computername TEXT,
-    processid TEXT,
-    name TEXT,
-    description TEXT,
-    pathname TEXT,
-    started TEXT,
-    startmode TEXT,
-    startname TEXT,
-    state TEXT)'
+        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
+        date DATETIME,
+        computername TEXT,
+        processid TEXT,
+        name TEXT,
+        description TEXT,
+        pathname TEXT,
+        started TEXT,
+        startmode TEXT,
+        startname TEXT,
+        state TEXT)'
 
-Invoke-SqliteQuery -Query $Query -DataSource $servicesDB | Out-Null
-}
+    Invoke-SqliteQuery -Query $Query -DataSource $poshDB | Out-Null
 
-if(-not(test-path "$userInfoDB")){
     $Query = 'CREATE TABLE useraccount (
-    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
-    date DATETIME,
-    computername TEXT,
-    accounttype TEXT,
-    fullname TEXT,
-    domain TEXT,
-    disabled TEXT,
-    localaccount TEXT,
-    lockedout TEXT,
-    passwordchangeable TEXT,
-    passwordexpires TEXT,
-    sid TEXT)'
+        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
+        date DATETIME,
+        computername TEXT,
+        accounttype TEXT,
+        fullname TEXT,
+        domain TEXT,
+        disabled TEXT,
+        localaccount TEXT,
+        lockedout TEXT,
+        passwordchangeable TEXT,
+        passwordexpires TEXT,
+        sid TEXT)'
 
-Invoke-SqliteQuery -Query $Query -DataSource $userInfoDB | Out-Null
-}
+    Invoke-SqliteQuery -Query $Query -DataSource $poshDB | Out-Null
 
-if(-not(test-path "$networkDB")){
     $Query = 'CREATE TABLE networks (
-    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
-    date DATETIME,
-    computername TEXT,
-    ipaddress TEXT,
-    ipsubnet TEXT,
-    defaultipgateway TEXT,
-    dhcpserver TEXT,
-    dnshostname TEXT,
-    dnsserversearchorder TEXT,
-    macaddress TEXT,
-    description TEXT)'
+        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
+        date DATETIME,
+        computername TEXT,
+        ipaddress TEXT,
+        ipsubnet TEXT,
+        defaultipgateway TEXT,
+        dhcpserver TEXT,
+        dnshostname TEXT,
+        dnsserversearchorder TEXT,
+        macaddress TEXT,
+        description TEXT)'
 
-Invoke-SqliteQuery -Query $Query -DataSource $networkDB | Out-Null
+    Invoke-SqliteQuery -Query $Query -DataSource $poshDB | Out-Null
+
+    $Query = 'CREATE TABLE shares (
+        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
+        date DATETIME,
+        computername TEXT,
+        name TEXT,
+        path TEXT,
+        description TEXT)'
+
+    Invoke-SqliteQuery -Query $Query -DataSource $poshDB | Out-Null
+
+    $Query = 'CREATE TABLE computersystem (
+        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
+        date DATETIME,
+        computername TEXT,
+        domain TEXT,
+        model TEXT,
+        manufacturer TEXT,
+        enabledaylightsavingstime TEXT,
+        partofdomain TEXT,
+        roles TEXT,
+        systemtype TEXT,
+        numberofprocessors TEXT,
+        totalphysicalmemory TEXT,
+        username TEXT)'
+
+    Invoke-SqliteQuery -Query $Query -DataSource $poshDB | Out-Null
+
+    $Query = 'CREATE TABLE patch (
+        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
+        date DATETIME,
+        computername TEXT,
+        hotfixid TEXT,
+        description TEXT,
+        installedby TEXT,
+        installedon TEXT)'
+
+    Invoke-SqliteQuery -Query $Query -DataSource $poshDB | Out-Null
+
+    $Query = 'CREATE TABLE software (
+        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
+        date DATETIME,
+        computername TEXT,
+        name TEXT,
+        packetcache TEXT,
+        vendor TEXT,
+        version TEXT,
+        identifyingnumber TEXT)'
+
+    Invoke-SqliteQuery -Query $Query -DataSource $poshDB | Out-Null
+
+    $Query = 'CREATE TABLE connections (
+        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
+        date DATETIME,
+        computername TEXT,
+        protocol TEXT,
+        version TEXT,
+        localaddress TEXT,
+        localport TEXT,
+        remoteaddress TEXT,
+        remoteport TEXT,
+        state TEXT,
+        processid TEXT,
+        processname TEXT,
+        processpath TEXT)'
+
+    Invoke-SqliteQuery -Query $Query -DataSource $poshDB | Out-Null
 }
 
-if(-not(test-path "$sharesDB")){
-        $Query = 'CREATE TABLE shares (
-    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
-    date DATETIME,
-    computername TEXT,
-    name TEXT,
-    path TEXT,
-    description TEXT)'
-
-Invoke-SqliteQuery -Query $Query -DataSource $sharesDB | Out-Null
-}
-
-if(-not(test-path "$sysinfoDB")){
-        $Query = 'CREATE TABLE computersystem (
-    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
-    date DATETIME,
-    computername TEXT,
-    domain TEXT,
-    model TEXT,
-    manufacturer TEXT,
-    enabledaylightsavingstime TEXT,
-    partofdomain TEXT,
-    roles TEXT,
-    systemtype TEXT,
-    numberofprocessors TEXT,
-    totalphysicalmemory TEXT,
-    username TEXT)'
-
-Invoke-SqliteQuery -Query $Query -DataSource $sysinfoDB | Out-Null
-}
-
-if(-not(test-path "$patchDB")){
-        $Query = 'CREATE TABLE patch (
-    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
-    date DATETIME,
-    computername TEXT,
-    hotfixid TEXT,
-    description TEXT,
-    installedby TEXT,
-    installedon TEXT)'
-
-Invoke-SqliteQuery -Query $Query -DataSource $patchDB | Out-Null
-}
-
-if(-not(test-path "$softwareDB")){
-        $Query = 'CREATE TABLE software (
-    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
-    date DATETIME,
-    computername TEXT,
-    name TEXT,
-    packetcache TEXT,
-    vendor TEXT,
-    version TEXT,
-    identifyingnumber TEXT)'
-
-Invoke-SqliteQuery -Query $Query -DataSource $softwareDB | Out-Null
-}
-
-if(-not(test-path "$netstatDB")){
-            $Query = 'CREATE TABLE connections (
-    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,
-    date DATETIME,
-    computername TEXT,
-    protocol TEXT,
-    version TEXT,
-    localaddress TEXT,
-    localport TEXT,
-    remoteaddress TEXT,
-    remoteport TEXT,
-    state TEXT,
-    processid TEXT,
-    processname TEXT,
-    processpath TEXT)'
-
-Invoke-SqliteQuery -Query $Query -DataSource $netstatDB | Out-Null
-}
-
-Write-Host "Retrieving Autoruns information..." -ForegroundColor yellow
+Write-Host "[-] " -ForegroundColor Green -NoNewline; Write-Host "Retrieving Autoruns information..." -ForegroundColor yellow
 Get-WMIObject -Namespace root\cimv2 -Class win32_startupcommand -ComputerName $computers | select PSComputername, Name, Location, Command, User | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Autoruns.csv -NoTypeInformation
 
-Write-Host "Retrieving logon information..." -ForegroundColor yellow
+Write-Host "[-] " -ForegroundColor Green -NoNewline; Write-Host "Retrieving logon information..." -ForegroundColor yellow
 Get-WMIObject -Namespace root\cimv2 -Class win32_networkloginprofile -ComputerName $computers | select PSComputername,Name, LastLogon,LastLogoff,NumberOfLogons,PasswordAge | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\NetLogon.csv -NoTypeInformation
 
-Write-Host "Retrieving event log information..." -ForegroundColor yellow
+Write-Host "[-] " -ForegroundColor Green -NoNewline; Write-Host "Retrieving event log information..." -ForegroundColor yellow
 Get-WMIObject -Namespace root\cimv2 -Class win32_ntlogevent -ComputerName $computers -filter "logfile='security'" | select PSComputername, LogFile, EventCode, TimeGenerated, Message, Type | select -first 50 | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Eventlogs-Security.csv -NoTypeInformation
 Get-WMIObject -Namespace root\cimv2 -Class win32_ntlogevent -ComputerName $computers -filter "logfile='system'" | select PSComputername, LogFile, EventCode, TimeGenerated, Message, Type | select -first 50 | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Eventlogs-System.csv -NoTypeInformation
 Get-WMIObject -Namespace root\cimv2 -Class win32_ntlogevent -ComputerName $computers -filter "logfile='application'" | select PSComputername, LogFile, EventCode, TimeGenerated, Message, Type | select -first 50 | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Eventlogs-Application.csv -NoTypeInformation
 
-Write-Host "Retrieving driver information..." -ForegroundColor yellow
+Write-Host "[-] " -ForegroundColor Green -NoNewline; Write-Host "Retrieving driver information..." -ForegroundColor yellow
 Get-WMIObject -Namespace root\cimv2 -Class win32_systemdriver -ComputerName $computers | select PSComputername, Name, InstallDate, DisplayName, PathName, State, StartMode | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Drivers.csv -NoTypeInformation
 
-Write-Host "Retrieving mapped drives information..." -ForegroundColor yellow
+Write-Host "[-] " -ForegroundColor Green -NoNewline; Write-Host "Retrieving mapped drives information..." -ForegroundColor yellow
 Get-WMIObject -Namespace root\cimv2 -Class win32_mappedlogicaldisk -ComputerName $computers | select PSComputername, Name, ProviderName | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Mapped_Drives.csv -NoTypeInformation
 
-Write-Host "Retrieving running processes information..." -ForegroundColor yellow
+Write-Host "[-] " -ForegroundColor Green -NoNewline; Write-Host "Retrieving running processes information..." -ForegroundColor yellow
 Get-WMIObject -Namespace root\cimv2 -Class win32_process -ComputerName $computers | select PSComputername, Name, path, Commandline, Description, ProcessID, ParentProcessID, Handle, HandleCount, ThreadCount, CreationDate | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Processes.csv -NoTypeInformation
 
-Write-Host "Retrieving scheduled tasks created by at.exe or Win32_ScheduledJob..." -ForegroundColor yellow
+Write-Host "[-] " -ForegroundColor Green -NoNewline; Write-Host "Retrieving scheduled tasks created by at.exe or Win32_ScheduledJob..." -ForegroundColor yellow
 Get-WMIObject -Namespace root\cimv2 -Class win32_scheduledjob -ComputerName $computers | select PSComputername, Name, Owner, JodID, Command, RunRepeatedly, InteractWithDesktop | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Scheduled_Tasks.csv -NoTypeInformation
 
-Write-Host "Retrieving service information..." -ForegroundColor yellow
+Write-Host "[-] " -ForegroundColor Green -NoNewline; Write-Host "Retrieving service information..." -ForegroundColor yellow
 Get-WMIObject -Namespace root\cimv2 -Class win32_service -ComputerName $computers | select PSComputername, ProcessID, Name, Description, PathName, Started, StartMode, StartName, State | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Services.csv -NoTypeInformation
 
-Write-Host "Retrieving environment variables information..." -ForegroundColor yellow
+Write-Host "[-] " -ForegroundColor Green -NoNewline; Write-Host "Retrieving environment variables information..." -ForegroundColor yellow
 Get-WMIObject -Namespace root\cimv2 -Class win32_environment -ComputerName $computers | select PSComputername, UserName, Name, VariableValue | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Environment_Variables.csv -NoTypeInformation
 
-Write-Host "Retrieving user information..." -ForegroundColor yellow
+Write-Host "[-] " -ForegroundColor Green -NoNewline; Write-Host "Retrieving user information..." -ForegroundColor yellow
 Get-WMIObject -Namespace root\cimv2 -Class win32_useraccount -ComputerName $computers | select PSComputername, accounttype, name, fullname, domain, disabled, localaccount, lockout, passwordchangeable, passwordexpires, sid | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Users.csv -NoTypeInformation
 
-Write-Host "Retrieving group information..." -ForegroundColor yellow
+Write-Host "[-] " -ForegroundColor Green -NoNewline; Write-Host "Retrieving group information..." -ForegroundColor yellow
 Get-WMIObject -Namespace root\cimv2 -Class win32_group -ComputerName $computers |select PSComputername, Caption, Domain, Name, Sid | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Groups.csv -NoTypeInformation
 
-Write-Host "Retrieving loggedon user information..." -ForegroundColor yellow
+Write-Host "[-] " -ForegroundColor Green -NoNewline; Write-Host "Retrieving loggedon user information..." -ForegroundColor yellow
 Get-WMIObject -Namespace root\cimv2 -Class win32_computersystem -ComputerName $computers | select PSComputername, Username | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Logged_on_User.csv -NoTypeInformation
 
-Write-Host "Retrieving network configurations..." -ForegroundColor yellow
+Write-Host "[-] " -ForegroundColor Green -NoNewline; Write-Host "Retrieving network configurations..." -ForegroundColor yellow
 Get-WMIObject -Namespace root\cimv2 -Class win32_networkadapterconfiguration -ComputerName $computers | select PSComputername, IPAddress, IPSubnet, DefaultIPGateway, DHCPServer, DNSHostname, DNSserversearchorder, MACAddress, description| Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Network_Configs.csv -NoTypeInformation
 
-Write-Host "Retrieving shares information..." -ForegroundColor yellow
+Write-Host "[-] " -ForegroundColor Green -NoNewline; Write-Host "Retrieving shares information..." -ForegroundColor yellow
 Get-WMIObject -Namespace root\cimv2 -Class win32_share -ComputerName $computers |select PSComputername, Name, Path, Description | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Shares.csv -NoTypeInformation
 
-Write-Host "Retrieving disk information..." -ForegroundColor yellow
+Write-Host "[-] " -ForegroundColor Green -NoNewline; Write-Host "Retrieving disk information..." -ForegroundColor yellow
 Get-WMIObject -Namespace root\cimv2 -Class win32_logicaldisk -ComputerName $computers | select PSComputername, DeviceID, Description, ProviderName | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Disk.csv -NoTypeInformation
 
-Write-Host "Retrieving system information..." -ForegroundColor yellow
+Write-Host "[-] " -ForegroundColor Green -NoNewline; Write-Host "Retrieving system information..." -ForegroundColor yellow
 Get-WMIObject -Namespace root\cimv2 -Class win32_computersystem -ComputerName $computers | select PSComputername, Domain, Model, Manufacturer, EnableDaylightSavingsTime, PartOfDomain, Roles, SystemType, NumberOfProcessors, TotalPhysicalMemory, Username | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\System_Info.csv -NoTypeInformation
 
-Write-Host "Retrieving installed patch information..." -ForegroundColor yellow
+Write-Host "[-] " -ForegroundColor Green -NoNewline; Write-Host "Retrieving installed patch information..." -ForegroundColor yellow
 Get-WMIObject -Namespace root\cimv2 -Class win32_quickfixengineering -ComputerName $computers | select PSComputername, HotFixID, Description, InstalledBy, InstalledOn | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Patches.csv -NoTypeInformation
 
 # Warning: https://gregramsey.net/2012/02/20/win32_product-is-evil/
-Write-Host "Retrieving installed software information..." -ForegroundColor yellow
+Write-Host "[-] " -ForegroundColor Green -NoNewline; Write-Host "Retrieving installed software information..." -ForegroundColor yellow
 Get-WMIObject -Namespace root\cimv2 -Class win32_product -ComputerName $computers | select PSComputername, Name, PackageCache, Vendor, Version, IdentifyingNumber | Export-CSV $PSScriptRoot\PoSh-R2_data\$dirDate\Software.csv -NoTypeInformation
 
-Write-Host "Retrieving network connections..." -ForegroundColor yellow
+Write-Host "[-] " -ForegroundColor Green -NoNewline; Write-Host "Retrieving network connections..." -ForegroundColor yellow
 if($localhost -eq $null){
-foreach($computer in $computers){
-Invoke-WmiMethod -Class Win32_Process -Name Create -Computername $computer -ArgumentList "cmd /c netstat -ano > c:\$computer.txt" >$null 2>&1
-copy-item \\$computer\c$\$computer.txt $PSScriptRoot\PoSh-R2_data\$dirDate
-$connections = get-content $PSScriptRoot\PoSh-R2_data\$dirDate\$computer.txt
-    $NetStatRecords = @()
-    $Connections[4..$Connections.count] | foreach-object {
-        Write-Verbose "Parsing line: $_ "
-        $Fragments = ($_ -replace '\s+', ' ').Split(' ')
-        if ($Fragments[2].Contains('[')) { 
-            $Version       = 'IPv6'
-            $LocalAddress  = $Fragments[2].Split(']')[0].Split('[')[1]
-            $LocalPort     = $Fragments[2].Split(']')[1].Split(':')[1]            
-        } else { 
-            $Version       = 'IPv4'
-            $LocalAddress  = $Fragments[2].Split(':')[0] 
-            $LocalPort     = $Fragments[2].Split(':')[1]
+    foreach($computer in $computers){
+    Invoke-WmiMethod -Class Win32_Process -Name Create -Computername $computer -ArgumentList "cmd /c netstat -ano > c:\$computer.txt" >$null 2>&1
+    copy-item \\$computer\c$\$computer.txt $PSScriptRoot\PoSh-R2_data\$dirDate
+    $connections = get-content $PSScriptRoot\PoSh-R2_data\$dirDate\$computer.txt
+        $NetStatRecords = @()
+        Start-Sleep 2
+        $Connections[4..$Connections.count] | foreach-object {
+            Write-Verbose "Parsing line: $_ "
+            $Fragments = ($_ -replace '\s+', ' ').Split(' ')
+            if ($Fragments[2].Contains('[')) { 
+                $Version       = 'IPv6'
+                $LocalAddress  = $Fragments[2].Split(']')[0].Split('[')[1]
+                $LocalPort     = $Fragments[2].Split(']')[1].Split(':')[1]            
+            } else { 
+                $Version       = 'IPv4'
+                $LocalAddress  = $Fragments[2].Split(':')[0] 
+                $LocalPort     = $Fragments[2].Split(':')[1]
+            }
+            if ($Fragments[3].Contains('[')) { 
+                $RemoteAddress = $Fragments[3].Split(']')[0].Split('[')[1]
+                $RemotePort    = $Fragments[3].Split(']')[1].Split(':')[1]
+            } else { 
+                $RemoteAddress = $Fragments[3].Split(':')[0] 
+                $RemotePort    = $Fragments[3].Split(':')[1]
+            }
+            $ProcessID = $(if ($RemoteAddress -eq '*') {$Fragments[4]} else {$Fragments[5]})
+            $Props = [ordered]@{
+                ComputerName = $computer
+                Protocol      = $Fragments[1]
+                Version       = $Version
+                LocalAddress  = $LocalAddress
+                LocalPort     = $LocalPort
+                RemoteAddress = $RemoteAddress
+                RemotePort    = $RemotePort
+                State         = $(if ($RemoteAddress -eq '*') {''} else {$Fragments[4]}) 
+                ProcessID     = $ProcessID
+            }
+            $Record = New-Object -TypeName PSObject -Property $Props
+            $NetStatRecords += $Record
         }
-        if ($Fragments[3].Contains('[')) { 
-            $RemoteAddress = $Fragments[3].Split(']')[0].Split('[')[1]
-            $RemotePort    = $Fragments[3].Split(']')[1].Split(':')[1]
-        } else { 
-            $RemoteAddress = $Fragments[3].Split(':')[0] 
-            $RemotePort    = $Fragments[3].Split(':')[1]
-        }
-        $ProcessID = $(if ($RemoteAddress -eq '*') {$Fragments[4]} else {$Fragments[5]})
-        $Props = [ordered]@{
-            ComputerName = $computer
-            Protocol      = $Fragments[1]
-            Version       = $Version
-            LocalAddress  = $LocalAddress
-            LocalPort     = $LocalPort
-            RemoteAddress = $RemoteAddress
-            RemotePort    = $RemotePort
-            State         = $(if ($RemoteAddress -eq '*') {''} else {$Fragments[4]}) 
-            ProcessID     = $ProcessID
-            ProcessName   = $((Get-Process -Id $ProcessID).Name)
-            ProcessPath   = $((Get-Process -Id $ProcessID).Path)
-        }
-        $Record = New-Object -TypeName PSObject -Property $Props
-        $NetStatRecords += $Record
-    }
 
-$NetStatRecords | export-csv $PSScriptRoot\PoSh-R2_data\$dirDate\connections.csv -NoTypeInformation -Append
-Remove-Variable NetStatRecords
-remove-item $PSScriptRoot\PoSh-R2_data\$dirDate\$computer.txt
-}
-remove-item \\$computer\c$\$computer.txt 
+    $NetStatRecords | export-csv $PSScriptRoot\PoSh-R2_data\$dirDate\connections.csv -NoTypeInformation -Append
+    Remove-Variable NetStatRecords
+    Remove-item $PSScriptRoot\PoSh-R2_data\$dirDate\$computer.txt
+    }
+Remove-item \\$computer\c$\$computer.txt 
 Remove-Variable localhost -ErrorAction SilentlyContinue
 }
 
 else{
-    
     $connections = netstat -ano
     $NetStatRecords = @()
     $Connections[4..$Connections.count] | foreach-object {
@@ -886,14 +845,14 @@ else{
         $Record = New-Object -TypeName PSObject -Property $Props
         $NetStatRecords += $Record
     }
-
 $NetStatRecords | export-csv $PSScriptRoot\PoSh-R2_data\$dirDate\connections.csv -NoTypeInformation -Append
 Remove-Variable NetStatRecords
 }
 
-Write-host "Done!"-ForegroundColor Cyan
-Write-output "..."
-Write-Host "Importing data to databases..." -ForegroundColor yello
+Write-Output " "
+Write-Host "Done!"-ForegroundColor Cyan
+Write-Output " "
+Write-Host "[-] " -ForegroundColor Green -NoNewline; Write-Host "Importing data into database..." -ForegroundColor Yellow
 Write-Output " "
 
 $autorun = import-csv $PSScriptRoot\PoSh-R2_data\$dirDate\Autoruns.csv
@@ -984,7 +943,7 @@ $connectionsQuery = 'INSERT INTO connections (date, computername, protocol, vers
 
 foreach($item in $autorun){
 
-    Invoke-SqliteQuery -DataSource $autorunDB -Query $autorunQuery -SqlParameters @{
+    Invoke-SqliteQuery -DataSource $poshDB -Query $autorunQuery -SqlParameters @{
         date = (get-item $PSScriptRoot\PoSh-R2_data\$dirDate\Autoruns.csv).CreationTimeUtc
         computername  = $item.pscomputername
         name  = $item.name
@@ -997,7 +956,7 @@ foreach($item in $autorun){
 
 foreach($item in $disk){
 
-    Invoke-SqliteQuery -DataSource $diskDB -Query $diskQuery -SqlParameters @{
+    Invoke-SqliteQuery -DataSource $poshDB -Query $diskQuery -SqlParameters @{
         date = (get-item $PSScriptRoot\PoSh-R2_data\$dirDate\disk.csv).CreationTimeUtc
         computername = $item.pscomputername
         deviceid = $item.deviceid
@@ -1009,7 +968,7 @@ foreach($item in $disk){
 
 foreach($item in $drivers){
 
-    Invoke-SqliteQuery -DataSource $driverDB -Query $driversQuery -SqlParameters @{
+    Invoke-SqliteQuery -DataSource $poshDB -Query $driversQuery -SqlParameters @{
         date = (get-item $PSScriptRoot\PoSh-R2_data\$dirDate\drivers.csv).CreationTimeUtc
         computername = $item.pscomputername
         name = $item.name
@@ -1024,7 +983,7 @@ foreach($item in $drivers){
 
 foreach($item in $envVar){
 
-    Invoke-SqliteQuery -DataSource $envDB -Query $envQuery -SqlParameters @{
+    Invoke-SqliteQuery -DataSource $poshDB -Query $envQuery -SqlParameters @{
         date = (get-item $PSScriptRoot\PoSh-R2_data\$dirDate\Environment_Variables.csv).CreationTimeUtc
         computername  = $item.pscomputername
         username  = $item.username
@@ -1036,7 +995,7 @@ foreach($item in $envVar){
 
 foreach($item in $evtApp){
 
-    Invoke-SqliteQuery -DataSource $appEvtDB -Query $appevtQuery -SqlParameters @{
+    Invoke-SqliteQuery -DataSource $poshDB -Query $appevtQuery -SqlParameters @{
         date = (get-item $PSScriptRoot\PoSh-R2_data\$dirDate\Eventlogs-Application.csv).CreationTimeUtc
         computername  = $item.pscomputername
         logfile  = $item.logfile
@@ -1050,7 +1009,7 @@ foreach($item in $evtApp){
 
 foreach($item in $evtSec){
 
-    Invoke-SqliteQuery -DataSource $secEvtDB -Query $secevtQuery -SqlParameters @{
+    Invoke-SqliteQuery -DataSource $poshDB -Query $secevtQuery -SqlParameters @{
         date = (get-item $PSScriptRoot\PoSh-R2_data\$dirDate\Eventlogs-Security.csv).CreationTimeUtc
         computername  = $item.pscomputername
         logfile  = $item.logfile
@@ -1064,7 +1023,7 @@ foreach($item in $evtSec){
 
 foreach($item in $evtSys){
 
-    Invoke-SqliteQuery -DataSource $sysEvtDB -Query $sysevtQuery -SqlParameters @{
+    Invoke-SqliteQuery -DataSource $poshDB -Query $sysevtQuery -SqlParameters @{
         date = (get-item $PSScriptRoot\PoSh-R2_data\$dirDate\Eventlogs-System.csv).CreationTimeUtc
         computername  = $item.pscomputername
         logfile  = $item.logfile
@@ -1078,7 +1037,7 @@ foreach($item in $evtSys){
 
 foreach($item in $groups){
 
-    Invoke-SqliteQuery -DataSource $groupDB -Query $groupsQuery -SqlParameters @{
+    Invoke-SqliteQuery -DataSource $poshDB -Query $groupsQuery -SqlParameters @{
         date = (get-item $PSScriptRoot\PoSh-R2_data\$dirDate\Groups.csv).CreationTimeUtc
         computername  = $item.pscomputername
         caption  = $item.caption
@@ -1092,7 +1051,7 @@ foreach($item in $groups){
 
 foreach($item in $loggedon){
 
-    Invoke-SqliteQuery -DataSource $loggedinDB -Query $loggedinuserQuery -SqlParameters @{
+    Invoke-SqliteQuery -DataSource $poshDB -Query $loggedinuserQuery -SqlParameters @{
         date = (get-item $PSScriptRoot\PoSh-R2_data\$dirDate\Logged_on_User.csv).CreationTimeUtc
         computername  = $item.pscomputername
         username = $item.username
@@ -1102,7 +1061,7 @@ foreach($item in $loggedon){
 
 foreach($item in $mapped){
 
-    Invoke-SqliteQuery -DataSource $mappedDB -Query $mappeddrivesQuery -SqlParameters @{
+    Invoke-SqliteQuery -DataSource $poshDB -Query $mappeddrivesQuery -SqlParameters @{
         date = (get-item $PSScriptRoot\PoSh-R2_data\$dirDate\Mapped_Drives.csv).CreationTimeUtc
         computername  = $item.pscomputername
         providername = $item.providername
@@ -1112,7 +1071,7 @@ foreach($item in $mapped){
 
 foreach($item in $process){
 
-    Invoke-SqliteQuery -DataSource $processDB -Query $processQuery -SqlParameters @{
+    Invoke-SqliteQuery -DataSource $poshDB -Query $processQuery -SqlParameters @{
         date = (get-item $PSScriptRoot\PoSh-R2_data\$dirDate\Processes.csv).CreationTimeUtc
         computername  = $item.pscomputername
         name = $item.name
@@ -1131,7 +1090,7 @@ foreach($item in $process){
 
 foreach($item in $sched){
 
-    Invoke-SqliteQuery -DataSource $schedtasksDB -Query $schedtaskQuery -SqlParameters @{
+    Invoke-SqliteQuery -DataSource $poshDB -Query $schedtaskQuery -SqlParameters @{
         date = (get-item $PSScriptRoot\PoSh-R2_data\$dirDate\Scheduled_Tasks.csv).CreationTimeUtc
         computername  = $item.pscomputername
         name = $item.name
@@ -1147,7 +1106,7 @@ foreach($item in $sched){
 
 foreach($item in $serv){
 
-    Invoke-SqliteQuery -DataSource $servicesDB -Query $servicesQuery -SqlParameters @{
+    Invoke-SqliteQuery -DataSource $poshDB -Query $servicesQuery -SqlParameters @{
         date = (get-item $PSScriptRoot\PoSh-R2_data\$dirDate\Services.csv).CreationTimeUtc
         computername  = $item.pscomputername
         processid = $item.processid
@@ -1164,7 +1123,7 @@ foreach($item in $serv){
 
 foreach($item in $users){
 
-    Invoke-SqliteQuery -DataSource $userInfoDB -Query $useraccountQuery -SqlParameters @{
+    Invoke-SqliteQuery -DataSource $poshDB -Query $useraccountQuery -SqlParameters @{
         date = (get-item $PSScriptRoot\PoSh-R2_data\$dirDate\Users.csv).CreationTimeUtc
         computername  = $item.pscomputername
         accounttype = $item.accounttype
@@ -1183,7 +1142,7 @@ foreach($item in $users){
 
 foreach($item in $net){
 
-    Invoke-SqliteQuery -DataSource $networkDB -Query $networksQuery -SqlParameters @{
+    Invoke-SqliteQuery -DataSource $poshDB -Query $networksQuery -SqlParameters @{
         date = (get-item $PSScriptRoot\PoSh-R2_data\$dirDate\Network_Configs.csv).CreationTimeUtc
         computername  = $item.pscomputername
         ipaddress = $item.ipaddress
@@ -1199,7 +1158,7 @@ foreach($item in $net){
 
 foreach($item in $netlogon){
 
-    Invoke-SqliteQuery -DataSource $logonDB -Query $netlogonQuery -SqlParameters @{
+    Invoke-SqliteQuery -DataSource $poshDB -Query $netlogonQuery -SqlParameters @{
         date = (get-item $PSScriptRoot\PoSh-R2_data\$dirDate\NetLogon.csv).CreationTimeUtc
         computername  = $item.pscomputername
         name = $item.name
@@ -1211,7 +1170,7 @@ foreach($item in $netlogon){
 }
 foreach($item in $shares){
 
-    Invoke-SqliteQuery -DataSource $sharesDB -Query $sharesQuery -SqlParameters @{
+    Invoke-SqliteQuery -DataSource $poshDB -Query $sharesQuery -SqlParameters @{
         date = (get-item $PSScriptRoot\PoSh-R2_data\$dirDate\Shares.csv).CreationTimeUtc
         computername  = $item.pscomputername
         name = $item.name
@@ -1223,7 +1182,7 @@ foreach($item in $shares){
 
 foreach($item in $sysInfo){
 
-    Invoke-SqliteQuery -DataSource $sysinfoDB -Query $computersystemQuery -SqlParameters @{
+    Invoke-SqliteQuery -DataSource $poshDB -Query $computersystemQuery -SqlParameters @{
         date = (get-item $PSScriptRoot\PoSh-R2_data\$dirDate\System_Info.csv).CreationTimeUtc
         computername  = $item.pscomputername
         domain = $item.domain
@@ -1241,7 +1200,7 @@ foreach($item in $sysInfo){
 
 foreach($item in $patch){
 
-    Invoke-SqliteQuery -DataSource $patchDB -Query $patchQuery -SqlParameters @{
+    Invoke-SqliteQuery -DataSource $poshDB -Query $patchQuery -SqlParameters @{
         date = (get-item $PSScriptRoot\PoSh-R2_data\$dirDate\Patches.csv).CreationTimeUtc
         computername  = $item.pscomputername
         hotfixid = $item.hotfixid
@@ -1253,7 +1212,7 @@ foreach($item in $patch){
 
 foreach($item in $software){
 
-    Invoke-SqliteQuery -DataSource $softwareDB -Query $softwareQuery -SqlParameters @{
+    Invoke-SqliteQuery -DataSource $poshDB -Query $softwareQuery -SqlParameters @{
         date = (get-item $PSScriptRoot\PoSh-R2_data\$dirDate\Software.csv).CreationTimeUtc
         computername  = $item.pscomputername
         name = $item.name
@@ -1266,7 +1225,7 @@ foreach($item in $software){
 
 foreach($item in $connects){
 
-    Invoke-SqliteQuery -DataSource $netstatDB -Query $connectionsQuery -SqlParameters @{
+    Invoke-SqliteQuery -DataSource $poshDB -Query $connectionsQuery -SqlParameters @{
         date = (get-item $PSScriptRoot\PoSh-R2_data\$dirDate\connections.csv).CreationTimeUtc
         computername  = $item.pscomputername
         protocol = $item.protocol
